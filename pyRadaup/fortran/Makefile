@@ -6,9 +6,11 @@ CCFLAGS = -fPIC
 FCFLAGS = -fPIC -fno-underscoring -ffixed-line-length-0
 LDFLAGS = -shared
 
-OBJS = dc_decsol.o  decsol.o radau5.o rock4.o integration_radau.o integration_rock.o
+# OBJS = dc_decsol.o decsol.o radau5.o radaup.o integration_radau.o integration_radaup.o
+# OBJS = dc_decsol.o decsol.o radaup.o integration_radaup.o
+OBJS = dc_decsol.o decsol.o radau.o integration_radau.o
 
-LIB = lib_radau_rock.so
+LIB = lib_radau.so
 
 all: $(LIB)
 
