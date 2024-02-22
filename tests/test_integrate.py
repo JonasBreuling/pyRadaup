@@ -19,11 +19,11 @@ def Robertson(DAE=False):
         var_index = np.zeros(n)
         # var_index = None
 
-    if DAE:
-        M = np.diag([1, 1, 0])
-    else:
-        M = np.eye(n)
-        # M = None
+    def M():
+        if DAE:
+            return np.diag([1, 1, 0])
+        else:
+            return None
 
     def fcn(n, x, y, f, rpar, ipar):
         y1, y2, y3 = y
@@ -77,8 +77,10 @@ if __name__ == "__main__":
     liwork = 100
     iwork = np.zeros(liwork, dtype=int)
 
-    rpar = np.zeros(1, dtype=float)
-    ipar = np.zeros(1, dtype=int)
+    # rpar = np.zeros(1, dtype=float)
+    # ipar = np.zeros(1, dtype=int)
+    rpar = 0
+    ipar = 0
 
     sol = radau.radau(
         n,

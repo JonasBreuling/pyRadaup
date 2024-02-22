@@ -3,14 +3,12 @@
 
 python module radcov__user__routines 
     interface radcov_user_interface 
-        subroutine fcn(n,x,y,y0,rpar,ipar) ! in :radau:radau.f:radcov:unknown_interface
-            integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
-            double precision :: x
-            double precision dimension(n) :: y
-            double precision dimension(n),depend(n) :: y0
-            double precision dimension(*) :: rpar
-            integer dimension(*) :: ipar
-        end subroutine fcn
+        function fcn(n,x,y,f,rpar,ipar) !result (f)
+            integer :: n, ipar!(*)
+            double precision :: x, y(n), rpar!(*)
+            ! double precision :: x, y(n), rpar !(*)
+            double precision intent(out):: f(n)
+        end function fcn
         subroutine jac(n,x,y,fjac,ldjac,rpar,ipar) ! in :radau:radau.f:radcov:unknown_interface
             integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
             double precision :: x
@@ -41,7 +39,8 @@ end python module radcov__user__routines
 python module radau ! in 
     interface  ! in :radau
         subroutine radau(n,fcn,x,y,xend,h,rtol,atol,itol,jac,ijac,mljac,mujac,mas,imas,mlmas,mumas,solout,iout,work,lwork,iwork,liwork,rpar,ipar,idid) ! in :radau:radau.f
-            use radcov__user__routines, fcn=>fcn, jac=>jac, mas=>mas, solout=>solout
+            ! use radcov__user__routines, fcn=>wrap_fun, jac=>jac, mas=>mas, solout=>solout
+            use radcov__user__routines
             integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
             external fcn
             double precision :: x

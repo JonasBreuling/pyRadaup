@@ -49,4 +49,5 @@ if __name__ == "__main__":
         ext_modules=[ext_radau],
     )
 
-# python setup_example.py build
+# python setup.py build
+# python -m pip install .
