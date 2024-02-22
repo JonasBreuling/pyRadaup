@@ -1034,10 +1034,13 @@ C ---     SOLVE THE LINEAR SYSTEMS
          ZZ(I+N)=TI321*A1+TI322*A2+TI323*A3
          ZZ(I+N2)=TI331*A1+TI332*A2+TI333*A3
       END DO
+      WRITE(*,*) 'Hello from l. 1037.'
+      ! TODO: Spot segmentation fault here.
       CALL SLVRAD(N,FJAC,LDJAC,MLJAC,MUJAC,FMAS,LDMAS,MLMAS,MUMAS,
      &      M1,M2,NM1,FAC1,ALPHN(1),BETAN(1),E1,EE2,EE2(1,1+NM1),LDE1,
      &          ZZ,ZZ(1+N),ZZ(1+N2),FF,FF(1+N),FF(1+N2),
      &          CONT,IP1,IP2,IPHES,IER,IJOB)
+      WRITE(*,*) 'Hello from l. 1042.'
       NSOL=NSOL+1
       NEWT=NEWT+1
       DYNO=0.D0
@@ -1089,6 +1092,7 @@ C ---     BAD CONVERGENCE OR NUMBER OF ITERATIONS TO LARGE
       END DO
       IF (FACCON*DYNO.GT.FNEWT) GOTO 40
 C --- ERROR ESTIMATION  
+      WRITE(*,*) 'Hello from l. 1092.'
       CALL ESTRAD (N,FJAC,LDJAC,MLJAC,MUJAC,FMAS,LDMAS,MLMAS,MUMAS,
      &          H,DD1,DD2,DD3,FCN,NFCN,Y0,Y,IJOB,X,M1,M2,NM1,
      &          E1,LDE1,ZZ,ZZ(1+N),ZZ(1+N2),CONT,FF,FF(1+N),IP1,
