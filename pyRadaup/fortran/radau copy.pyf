@@ -11,6 +11,7 @@ python module radcov__user__routines
             double precision dimension(*) :: rpar
             integer dimension(*) :: ipar
         end subroutine fcn
+
         subroutine jac(n,x,y,fjac,ldjac,rpar,ipar) ! in :radau:radau.f:radcov:unknown_interface
             integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
             double precision :: x
@@ -20,16 +21,19 @@ python module radcov__user__routines
             double precision dimension(*) :: rpar
             integer dimension(*) :: ipar
         end subroutine jac
+
         function mas(n,am,lmas,rpar,ipar) result (am)
             integer :: n, lmas, ipar(*)
             double precision :: rpar(*), am(lmas, n)
         end function mas
+
         subroutine solout(nrsol,xosol,xsol,y,cont,lrc,nsolu,rpar,ipar,irtrn) ! in :radau:radau.f:radcov:unknown_interface
             integer :: nrsol
             double precision :: xosol
             double precision :: xsol
-            double precision dimension(nrsol) :: y
-            double precision dimension(nrsol + nsolu) :: cont
+            double precision dimension(nsolu) :: y
+            ! double precision dimension(n + nnms) :: cont
+            double precision dimension(lrc) :: cont
             integer :: lrc
             integer :: nsolu
             double precision dimension(*) :: rpar
@@ -128,7 +132,7 @@ python module radau ! in
             double precision dimension(lde1,nm1) :: e1
             double precision dimension(lde1,nmee),depend(lde1) :: ee2
             double precision dimension(ldmas,nm1),depend(nm1) :: fmas
-            double precision dimension(n + nnms),depend(n,nnms) :: cont
+            double precision dimension(n + nnms),depend(nnms,n) :: cont
             integer dimension(nm1),depend(nm1) :: ip1
             integer dimension(nmee / 2),depend(nmee) :: ip2
             integer dimension(nm1),depend(nm1) :: iphes
