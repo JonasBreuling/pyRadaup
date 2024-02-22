@@ -1,0 +1,61 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module __user__routines 
+    interface
+        function wrap_fun(n,x,y,f,rpar,ipar) result (f)
+            integer :: n, ipar(*)
+            double precision :: x, y(n), rpar(*)
+        end function wrap_fun
+
+        function wrap_jac(n,x,y,dfy,ldfy,rpar,ipar) result (dfy)
+            integer :: n, ldfy, ipar(*)
+            double precision :: x, y(n), rpar(*), dfy(n, ldfy)
+        end function wrap_jac
+
+        function wrap_mas(n,am,lmas,rpar,ipar) result (am)
+            integer :: n, lmas, ipar(*)
+            double precision :: rpar(*), am(lmas, n)
+        end function wrap_mas
+
+        function wrap_solout(nr,xold,x,y,cont,lrc,n,rpar,ipar,irtrn) ! result (f)
+            integer :: nr, n, lrc, irtrn, ipar(*)
+            double precision :: xold, x, y(n), cont(lrc), rpar(*)
+        end function wrap_solout
+    end interface
+end python module __user__routines
+
+python module radau ! in 
+    interface  ! in :radau
+        subroutine radau(n,fcn,x,y,xend,h,rtol,atol,itol,jac,ijac,mljac,mujac,mas,imas,mlmas,mumas,solout,iout,work,lwork,iwork,liwork,rpar,ipar,idid) ! in :radau:radau.f
+            ! integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            use __user__routines, fcn=>wrap_fun, jac=>wrap_jac, mas=>wrap_mas, solout=>wrap_solout
+            external fcn, jac, mas, solout
+            double precision :: x
+            double precision dimension(*) :: y
+            double precision :: xend
+            double precision :: h
+            double precision dimension(*) :: rtol
+            double precision dimension(*) :: atol
+            integer :: itol
+            integer :: ijac
+            integer :: mljac
+            integer :: mujac
+            integer :: imas
+            integer :: mlmas
+            integer :: mumas
+            integer :: iout
+            double precision dimension(lwork) :: work
+            integer, optional,check(shape(work, 0) == lwork),depend(work) :: lwork=shape(work, 0)
+            integer dimension(liwork) :: iwork
+            integer, optional,check(shape(iwork, 0) == liwork),depend(iwork) :: liwork=shape(iwork, 0)
+            double precision dimension(*) :: rpar
+            integer dimension(*) :: ipar
+            integer :: idid
+        end subroutine radau
+    end interface 
+end python module radau
+
+! This file was auto-generated with f2py (version:1.26.2).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e
