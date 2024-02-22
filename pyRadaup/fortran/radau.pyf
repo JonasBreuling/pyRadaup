@@ -3,14 +3,19 @@
 
 python module radcov__user__routines 
     interface radcov_user_interface 
-        function fcn(n,x,y,f,rpar,ipar) !result (f)
-            integer :: n, ipar!(*)
-            double precision :: x, y(n), rpar!(*)
-            ! double precision :: x, y(n), rpar !(*)
-            double precision intent(out):: f(n)
-        end function fcn
-        subroutine jac(n,x,y,fjac,ldjac,rpar,ipar) ! in :radau:radau.f:radcov:unknown_interface
-            integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+        subroutine fcn(n,x,y,y0,rpar,ipar)
+            ! integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            integer :: n
+            double precision :: x
+            double precision dimension(n) :: y
+            double precision dimension(n),depend(n) :: y0
+            double precision dimension(*) :: rpar
+            integer dimension(*) :: ipar
+        end subroutine fcn
+
+        subroutine jac(n,x,y,fjac,ldjac,rpar,ipar)
+            ! integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            integer :: n
             double precision :: x
             double precision dimension(n) :: y
             double precision dimension(ldjac,n),depend(n) :: fjac
@@ -18,16 +23,19 @@ python module radcov__user__routines
             double precision dimension(*) :: rpar
             integer dimension(*) :: ipar
         end subroutine jac
-        function mas(n,am,lmas,rpar,ipar) result (am)
+
+        subroutine mas(n,am,lmas,rpar,ipar)
             integer :: n, lmas, ipar(*)
             double precision :: rpar(*), am(lmas, n)
-        end function mas
-        subroutine solout(nrsol,xosol,xsol,y,cont,lrc,nsolu,rpar,ipar,irtrn) ! in :radau:radau.f:radcov:unknown_interface
+        end subroutine mas
+
+        subroutine solout(nrsol,xosol,xsol,y,cont,lrc,nsolu,rpar,ipar,irtrn)
             integer :: nrsol
             double precision :: xosol
             double precision :: xsol
-            double precision dimension(nrsol) :: y
-            double precision dimension(nrsol + nsolu) :: cont
+            double precision dimension(nsolu) :: y
+            ! double precision dimension(n + nnms) :: cont
+            double precision dimension(lrc) :: cont
             integer :: lrc
             integer :: nsolu
             double precision dimension(*) :: rpar
@@ -39,9 +47,9 @@ end python module radcov__user__routines
 python module radau ! in 
     interface  ! in :radau
         subroutine radau(n,fcn,x,y,xend,h,rtol,atol,itol,jac,ijac,mljac,mujac,mas,imas,mlmas,mumas,solout,iout,work,lwork,iwork,liwork,rpar,ipar,idid) ! in :radau:radau.f
-            ! use radcov__user__routines, fcn=>wrap_fun, jac=>jac, mas=>mas, solout=>solout
-            use radcov__user__routines
-            integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            use radcov__user__routines, fcn=>fcn, jac=>jac, mas=>mas, solout=>solout
+            ! integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            integer :: n
             external fcn
             double precision :: x
             double precision dimension(n) :: y
@@ -70,7 +78,8 @@ python module radau ! in
         end subroutine radau
         subroutine radcov(n,fcn,x,y,xend,hmax,h,rtol,atol,itol,ns,jac,ijac,mljac,mujac,mas,mlmas,mumas,solout,iout,idid,nmax,uround,safe,thet,quot1,quot2,nit1,ijob,startn,nind1,nind2,nind3,pred,facl,facr,m1,m2,nm1,nsmin,nsmax,nnms,nm1ns,nmee,implct,banded,ldjac,lde1,ldmas,zz,y0,scal,ff,fjac,e1,ee2,fmas,cont,ip1,ip2,iphes,vitu,vitd,hhou,hhod,nfcn,njac,nstep,naccpt,nrejct,ndec,nsol,rpar,ipar) ! in :radau:radau.f
             use radcov__user__routines
-            integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            ! integer, optional,check(shape(y, 0) == n),depend(y) :: n=shape(y, 0)
+            integer :: n
             external fcn
             double precision :: x
             double precision dimension(n) :: y
@@ -127,7 +136,7 @@ python module radau ! in
             double precision dimension(lde1,nm1) :: e1
             double precision dimension(lde1,nmee),depend(lde1) :: ee2
             double precision dimension(ldmas,nm1),depend(nm1) :: fmas
-            double precision dimension(n + nnms),depend(n,nnms) :: cont
+            double precision dimension(n + nnms),depend(nnms,n) :: cont
             integer dimension(nm1),depend(nm1) :: ip1
             integer dimension(nmee / 2),depend(nmee) :: ip2
             integer dimension(nm1),depend(nm1) :: iphes

@@ -19,14 +19,15 @@ def Robertson(DAE=False):
         var_index = np.zeros(n)
         # var_index = None
 
-    def M():
-        if DAE:
-            return np.diag([1, 1, 0])
-        else:
-            return None
+    def mas(am, rpar, ipar, n, lmas):
+        am[0, 0] = 1
+        am[1, 1] = 1
+        if not DAE:
+            am[2, 2] = 1
 
-    def fcn(n, x, y, f, rpar, ipar):
+    def fcn(x, y, f, rpar, ipar, n):
         y1, y2, y3 = y
+        f = np.zeros(n, dtype=float)
         f[0] = -0.04 * y1 + 1e4 * y2 * y3
         f[1] = 0.04 * y1 - 1e4 * y2 * y3 - 3e7 * y2**2
         if DAE:
@@ -37,7 +38,7 @@ def Robertson(DAE=False):
     def jac(t, y):
         raise NotImplementedError
 
-    return M, fcn, jac, var_index, n
+    return mas, fcn, jac, var_index, n
 
 
 if __name__ == "__main__":
@@ -71,19 +72,22 @@ if __name__ == "__main__":
     iout = 1
 
     # lwork = N*(LJAC+LMAS+NSMAX*LE+3*NSMAX+3)+20
-    lwork = 100
+    lwork = 1000
     work = np.zeros(lwork, dtype=float)
     # liwork = (2+(NSMAX-1)/2)*N+20
-    liwork = 100
+    liwork = 1000
     iwork = np.zeros(liwork, dtype=int)
 
-    # rpar = np.zeros(1, dtype=float)
-    # ipar = np.zeros(1, dtype=int)
-    rpar = 0
-    ipar = 0
+    rpar = np.zeros(10, dtype=float)
+    ipar = np.zeros(10, dtype=int)
+    # rpar = 0
+    # ipar = 0
+
+    idid = -99
+
+    print(radau.radau.__doc__)
 
     sol = radau.radau(
-        n,
         f,
         t0,
         y0,
@@ -103,9 +107,12 @@ if __name__ == "__main__":
         solout,
         iout,
         work,
-        lwork,
         iwork,
-        liwork,
         rpar,
         ipar,
+        idid,
+        # # optional arguments
+        # n,
+        # lwork,
+        # liwork,
     )
